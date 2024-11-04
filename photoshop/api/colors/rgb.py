@@ -46,4 +46,4 @@ class RGBColor(Photoshop):
         self.app.hexValue = value
 
     def __str__(self):
-        return f"[red: {self.red}, green:{self.green},  blue:{self.blue})]"
+        return f"[red: {self.red}, green: {self.green}, blue: {self.blue}]"
