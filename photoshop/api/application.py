@@ -10,6 +10,7 @@ app = Application()
 app.documents.add(800, 600, 72, "docRef")
 
 """
+
 # Import built-in modules
 import os
 from pathlib import Path
@@ -45,31 +46,42 @@ class Application(Photoshop):
 
     """
 
+    app_methods = [
+        "batch",
+        "charIDToTypeID",
+        "doAction",
+        "doJavaScript",
+        "eraseCustomOptions",
+        "executeAction",
+        "executeActionGet",
+        "featureEnabled",
+        "getCustomOptions",
+        "isQuicktimeAvailable",
+        "load",
+        "open",
+        "openDialog",
+        "purge",
+        "putCustomOptions",
+        "refresh",
+        "stringIDToTypeID",
+        "toolSupportsBrushes",
+        "toolSupportsBrushPresets",
+        "typeIDToCharID",
+        "typeIDToStringID",
+    ]
+
+    def __new__(cls, *args, **kwargs):
+        """Ensures that only one instance of `Application` exists at a time."""
+        if not hasattr(cls, "_app_instance"):
+            cls._app_instance = super().__new__(cls)
+            cls._app_initialized = False
+        return cls._app_instance
+
     def __init__(self, version: Optional[str] = None):
-        super().__init__(ps_version=version)
-        self._flag_as_method(
-            "batch",
-            "charIDToTypeID",
-            "doAction",
-            "doJavaScript",
-            "eraseCustomOptions",
-            "executeAction",
-            "executeActionGet",
-            "featureEnabled",
-            "getCustomOptions",
-            "isQuicktimeAvailable",
-            "load",
-            "open",
-            "openDialog",
-            "purge",
-            "putCustomOptions",
-            "refresh",
-            "stringIDToTypeID",
-            "toolSupportsBrushes",
-            "toolSupportsPresets",
-            "typeIDToCharID",
-            "typeIDToStringID",
-        )
+        """Skips initialization on subsequent calls."""
+        if not self._app_initialized:
+            super().__init__(ps_version=version)
+            self._app_initialized = True
 
     @property
     def activeLayer(self) -> ArtLayer:
@@ -372,7 +384,7 @@ class Application(Photoshop):
         a subtask. Returns false on cancel.
 
         """
-        script = f"app.doProgressTask({index}, '{javascript}');"
+        script = f"app.doProgressTask({index}, '{javascript}')"
         self.eval_javascript(script)
         # Ensure the script execute success.
         time.sleep(1)
@@ -460,17 +472,15 @@ class Application(Photoshop):
 
     def refreshFonts(self):
         """Force the font list to get refreshed."""
-        return self.eval_javascript("app.refreshFonts();")
+        return self.eval_javascript("app.refreshFonts()")
 
     def runMenuItem(self, menu_id):
         """Run a menu item given the menu ID."""
-        return self.eval_javascript(
-            f"app.runMenuItem({menu_id})",
-        )
+        return self.eval_javascript(f"app.runMenuItem({menu_id})")
 
     def showColorPicker(self):
         """Returns false if dialog is cancelled, true otherwise."""
-        return self.eval_javascript("app.showColorPicker();")
+        return self.eval_javascript("app.showColorPicker()")
 
     def stringIDToTypeID(self, string_id):
         return self.app.stringIDToTypeID(string_id)
