@@ -1,6 +1,5 @@
-from ..open_options.eps import EPSOpenOptions
+# Import local modules
+from photoshop.api.open_options.eps import EPSOpenOptions
 
 
-__all__ = [
-    EPSOpenOptions.__name__,
-]
+__all__ = ["EPSOpenOptions"]

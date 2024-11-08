@@ -9,19 +9,16 @@ class BMPSaveOptions(Photoshop):
 
     object_name = "BMPSaveOptions"
 
-    def __init__(self):
-        super().__init__()
-
     @property
-    def alphaChannels(self):
+    def alphaChannels(self) -> bool:
         """State to save the alpha channels."""
         return self.app.alphaChannels
 
     @alphaChannels.setter
-    def alphaChannels(self, value):
+    def alphaChannels(self, value: bool):
         """Sets whether to save the alpha channels or not.
 
         Args:
-
+            value: Whether to save the alpha channels.
         """
         self.app.alphaChannels = value

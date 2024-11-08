@@ -7,9 +7,6 @@ class GIFSaveOptions(Photoshop):
 
     object_name = "GIFSaveOptions"
 
-    def __init__(self):
-        super().__init__()
-
     @property
     def colors(self):
         return self.app.color

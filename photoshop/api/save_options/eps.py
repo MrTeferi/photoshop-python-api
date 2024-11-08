@@ -11,9 +11,6 @@ class EPSSaveOptions(Photoshop):
 
     object_name = "EPSSaveOptions"
 
-    def __init__(self):
-        super().__init__()
-
     @property
     def embedColorProfile(self) -> bool:
         """True to embed the color profile in this document."""

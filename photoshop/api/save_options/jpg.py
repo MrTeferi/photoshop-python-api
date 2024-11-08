@@ -42,7 +42,7 @@ class JPEGSaveOptions(Photoshop):
     @property
     def matte(self):
         """The color to use to fill anti-aliased edges adjacent to
-        transparent"""
+        transparent."""
         return self.app.matte
 
     @matte.setter

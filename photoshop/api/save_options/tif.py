@@ -7,9 +7,6 @@ class TiffSaveOptions(Photoshop):
 
     object_name = "TiffSaveOptions"
 
-    def __int__(self):
-        super().__init__()
-
     @property
     def alphaChannels(self):
         """If true, the alpha channels are saved."""
