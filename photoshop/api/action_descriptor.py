@@ -22,52 +22,48 @@ class ActionDescriptor(Photoshop):
 
     The ActionDescriptor class is part of the Action Manager functionality.
     For more details on the Action Manager, see the Photoshop Scripting Guide.
-
     """
 
     object_name = "ActionDescriptor"
-
-    def __init__(self):
-        super().__init__()
-        self._flag_as_method(
-            "clear",
-            "erase",
-            "fromStream",
-            "getBoolean",
-            "getClass",
-            "getData",
-            "getDouble",
-            "getEnumerationType",
-            "getEnumerationValue",
-            "getInteger",
-            "getKey",
-            "getLargeInteger",
-            "getList",
-            "getObjectType",
-            "getObjectValue",
-            "getPath",
-            "getReference",
-            "getString",
-            "getType",
-            "getUnitDoubleType",
-            "getUnitDoubleValue",
-            "hasKey",
-            "isEqual",
-            "putBoolean",
-            "putClass",
-            "putData",
-            "putDouble",
-            "putEnumerated",
-            "putInteger",
-            "putLargeInteger",
-            "putList",
-            "putObject",
-            "putPath",
-            "putReference",
-            "putString",
-            "putUnitDouble",
-            "toSteadm",
-        )
+    app_methods = [
+        "clear",
+        "erase",
+        "fromStream",
+        "getBoolean",
+        "getClass",
+        "getData",
+        "getDouble",
+        "getEnumerationType",
+        "getEnumerationValue",
+        "getInteger",
+        "getKey",
+        "getLargeInteger",
+        "getList",
+        "getObjectType",
+        "getObjectValue",
+        "getPath",
+        "getReference",
+        "getString",
+        "getType",
+        "getUnitDoubleType",
+        "getUnitDoubleValue",
+        "hasKey",
+        "isEqual",
+        "putBoolean",
+        "putClass",
+        "putData",
+        "putDouble",
+        "putEnumerated",
+        "putInteger",
+        "putLargeInteger",
+        "putList",
+        "putObject",
+        "putPath",
+        "putReference",
+        "putString",
+        "putUnitDouble",
+        "toStream",
+    ]
 
     @property
     def count(self):
@@ -171,11 +167,11 @@ class ActionDescriptor(Photoshop):
         return DescValueType(self.app.getType(key))
 
     def getUnitDoubleType(self, key: int) -> int:
-        """Gets the unit type of a key of type UnitDouble."""
+        """Gets the type of a UnitDouble key."""
         return self.app.getUnitDoubleType(key)
 
     def getUnitDoubleValue(self, key: int) -> float:
-        """Gets the unit type of a key of type UnitDouble."""
+        """Gets the value of a UnitDouble key."""
         return self.app.getUnitDoubleValue(key)
 
     def hasKey(self, key: int) -> bool:
@@ -245,6 +241,6 @@ class ActionDescriptor(Photoshop):
         self.app.putUnitDouble(key, unit_id, value)
 
     def toStream(self) -> str:
-        """Gets the entire descriptor as as stream of bytes,
+        """Gets the entire descriptor as stream of bytes,
         for writing to disk."""
         return self.app.toSteadm()

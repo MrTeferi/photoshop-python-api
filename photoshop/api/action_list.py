@@ -4,6 +4,7 @@ It can be used for low-level access info Photoshop.
 
 
 """
+
 # Import local modules
 from photoshop.api._core import Photoshop
 
@@ -18,21 +19,18 @@ class ActionList(Photoshop):
     """
 
     object_name = "ActionList"
-
-    def __init__(self, parent=None):
-        super().__init__(parent=parent)
-        self._flag_as_method(
-            "getBoolean",
-            "getClass",
-            "getData",
-            "getDouble",
-            "getEnumerationType",
-            "getEnumerationValue",
-            "getInteger",
-            "getLargeInteger",
-            "getList",
-            "getObjectType",
-        )
+    app_methods = [
+        "getBoolean",
+        "getClass",
+        "getData",
+        "getDouble",
+        "getEnumerationType",
+        "getEnumerationValue",
+        "getInteger",
+        "getLargeInteger",
+        "getList",
+        "getObjectType",
+    ]
 
     @property
     def count(self):

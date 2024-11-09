@@ -4,12 +4,7 @@ from photoshop.api._core import Photoshop
 
 # pylint: disable=too-many-public-methods
 class Channel(Photoshop):
-    def __init__(self, parent):
-        super().__init__(parent=parent)
-        self._flag_as_method(
-            "duplicate",
-            "merge",
-        )
+    app_methods = ["duplicate", "merge"]
 
     @property
     def color(self):

@@ -15,13 +15,6 @@ from photoshop.api.text_font import TextFont
 class TextFonts(Photoshop):
     """An installed font."""
 
-    def __init__(self, parent=None):
-        super().__init__(parent=parent)
-
-    """
-    MAGIC METHODS
-    """
-
     def __len__(self):
         return self.length
 
@@ -65,10 +58,6 @@ class TextFonts(Photoshop):
         except ArgumentError:
             raise PhotoshopPythonAPIError(f'Could not find a font with postScriptName "{key}"')
 
-    """
-    METHODS
-    """
-
     def get(self, key: str, default: Any = None) -> Union[TextFont, Any]:
         """
         Accesses a given TextFont using dictionary key lookup of postScriptName, returns default if not found.
@@ -101,10 +90,6 @@ class TextFonts(Photoshop):
             if font.name == name:
                 return TextFont(font)
         raise PhotoshopPythonAPIError('Could not find a TextFont named "{name}"')
-
-    """
-    PROPERTIES
-    """
 
     @property
     def _fonts(self):

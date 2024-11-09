@@ -6,9 +6,6 @@ from photoshop.api._core import Photoshop
 class BatchOptions(Photoshop):
     object_name = "BatchOptions"
 
-    def __init__(self):
-        super().__init__()
-
     @property
     def destination(self):
         """The type of destination for the processed files."""

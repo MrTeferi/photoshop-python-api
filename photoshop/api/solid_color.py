@@ -22,12 +22,7 @@ class SolidColor(Photoshop):
     """A color definition used in the document."""
 
     object_name = "SolidColor"
-
-    def __init__(self, parent=None):
-        super().__init__(parent=parent)
-        self._flag_as_method(
-            "isEqual",
-        )
+    app_methods = ["isEqual"]
 
     @property
     def cmyk(self) -> CMYKColor:
@@ -87,6 +82,6 @@ class SolidColor(Photoshop):
     def rgb(self, value: RGBColor):
         self.app.rgb = value
 
-    def isEqual(self, color: RGBColor):
+    def isEqual(self, color: "SolidColor"):
         """`SolidColor` object is visually equal to the specified color."""
         return self.app.isEqual(color)

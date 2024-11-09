@@ -8,6 +8,7 @@ It can be used for low-level access into Contains data associated
 with an ActionDescriptor.
 
 """
+
 # Import local modules
 from photoshop.api._core import Photoshop
 from photoshop.api.enumerations import ReferenceFormType
@@ -18,29 +19,25 @@ class ActionReference(Photoshop):
 
     The action reference object is part of the Action Manager functionality.
     For details on using the Action Manager, see the Photoshop Scripting Guide.
-
     """
 
     object_name = "ActionReference"
-
-    def __init__(self, parent=None):
-        super().__init__(parent=parent)
-        self._flag_as_method(
-            "getContainer",
-            "getDesiredClass",
-            "getEnumeratedType",
-            "getEnumeratedValue",
-            "getForm",
-            "getIdentifier",
-            "getIndex",
-            "putName",
-            "putClass",
-            "putEnumerated",
-            "putIdentifier",
-            "putIndex",
-            "putOffset",
-            "putProperty",
-        )
+    app_methods = [
+        "getContainer",
+        "getDesiredClass",
+        "getEnumeratedType",
+        "getEnumeratedValue",
+        "getForm",
+        "getIdentifier",
+        "getIndex",
+        "putName",
+        "putClass",
+        "putEnumerated",
+        "putIdentifier",
+        "putIndex",
+        "putOffset",
+        "putProperty",
+    ]
 
     def getContainer(self):
         return self.app.getContainer()

@@ -8,9 +8,6 @@ from photoshop.api._core import Photoshop
 class Preferences(Photoshop):
     """The application preference settings."""
 
-    def __init__(self, parent):
-        super().__init__(parent=parent)
-
     @property
     def additionalPluginFolder(self):
         """The path to an additional plug-in folder."""
