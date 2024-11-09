@@ -9,9 +9,6 @@ class HSBColor(Photoshop):
 
     object_name = "HSBColor"
 
-    def __init__(self, parent):
-        super().__init__(parent=parent)
-
     @property
     def brightness(self):
         return round(self.app.brightness)

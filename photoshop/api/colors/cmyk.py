@@ -9,9 +9,6 @@ class CMYKColor(Photoshop):
 
     object_name = "CMYKColor"
 
-    def __init__(self, parent):
-        super().__init__(parent=parent)
-
     @property
     def black(self) -> int:
         """The black color value. Range: 0.0 to 100.0."""

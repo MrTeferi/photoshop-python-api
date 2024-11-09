@@ -7,9 +7,6 @@ class LabColor(Photoshop):
 
     object_name = "LabColor"
 
-    def __init__(self, parent):
-        super().__init__(parent=parent)
-
     @property
     def A(self):
         return round(self.app.A)
