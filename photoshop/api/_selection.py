@@ -1,59 +1,60 @@
 """The selected area of the document or layer."""
+# Import built-in modules
+from __future__ import annotations
+from typing import TYPE_CHECKING
 
 # Import local modules
 from photoshop.api._core import Photoshop
 from photoshop.api.enumerations import ColorBlendMode
 from photoshop.api.enumerations import SelectionType
 from photoshop.api.solid_color import SolidColor
+if TYPE_CHECKING:
+    from photoshop.api._document import Document
 
 
 # pylint: disable=too-many-public-methods, too-many-arguments
 class Selection(Photoshop):
     """The selected area of the document."""
 
-    def __init__(self, parent=None):
-        super().__init__(parent=parent)
-        self._flag_as_method(
-            "clear",
-            "contract",
-            "copy",
-            "cut",
-            "deselect",
-            "expand",
-            "feather",
-            "fill",
-            "grow",
-            "invert",
-            "load",
-            "makeWorkPath",
-            "resize",
-            "resizeBoundary",
-            "rotate",
-            "rotateBoundary",
-            "select",
-            "selectBorder",
-            "similar",
-            "smooth",
-            "store",
-            "stroke",
-            "translate",
-            "translateBoundary",
-        )
+    app_methods = [
+        "clear",
+        "contract",
+        "copy",
+        "cut",
+        "deselect",
+        "expand",
+        "feather",
+        "fill",
+        "grow",
+        "invert",
+        "load",
+        "makeWorkPath",
+        "resize",
+        "resizeBoundary",
+        "rotate",
+        "rotateBoundary",
+        "select",
+        "selectBorder",
+        "similar",
+        "smooth",
+        "store",
+        "stroke",
+        "translate",
+        "translateBoundary",
+    ]
 
     @property
     def bounds(self):
         return self.app.bounds
 
-    def parent(self):
-        return self.app.parent
+    @property
+    def parent(self) -> 'Document':
+        from photoshop.api._document import Document
+        return Document(self.app.parent)
 
     @property
     def solid(self):
         return self.app.solid
-
-    @property
-    def typename(self):
-        return self.app.typename
 
     def clear(self):
         """Clears the selection and does not copy it to the clipboard."""
