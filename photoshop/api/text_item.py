@@ -1,3 +1,8 @@
+# Import built-in modules
+from __future__ import annotations
+from _ctypes import COMError
+from typing import TYPE_CHECKING, Union
+
 # Import local modules
 from photoshop.api._core import Photoshop
 from photoshop.api.enumerations import AntiAlias
@@ -8,20 +13,16 @@ from photoshop.api.enumerations import Language
 from photoshop.api.enumerations import StrikeThruType
 from photoshop.api.enumerations import TextComposer
 from photoshop.api.enumerations import TextType
+from photoshop.api.errors import PhotoshopPythonAPIError
 from photoshop.api.solid_color import SolidColor
+if TYPE_CHECKING:
+    from photoshop.api._artlayer import ArtLayer
 
 
 class TextItem(Photoshop):
     """The text that is associated with the layer. Valid only when ‘kind’ is text layer."""
 
-    object_name = "Application"
-
-    def __init__(self, parent):
-        super().__init__(parent=parent)
-        self._flag_as_method(
-            "convertToShape",
-            "createPath",
-        )
+    app_methods = ["convertToShape", "createPath"]
 
     @property
     def alternateLigatures(self):
@@ -254,43 +255,6 @@ class TextItem(Photoshop):
         self.app.horizontalScale = value
 
     @property
-    def hyphenateAfterFirst(self):
-        """The number of letters after which hyphenation in word wrap is allowed."""
-        return self.app.hyphenateAfterFirst
-
-    @hyphenateAfterFirst.setter
-    def hyphenateAfterFirst(self, value):
-        self.app.hyphenateAfterFirst = value
-
-    @property
-    def hyphenateBeforeLast(self):
-        """The number of letters before which hyphenation in word wrap is allowed."""
-        return self.app.hyphenateBeforeLast
-
-    @hyphenateBeforeLast.setter
-    def hyphenateBeforeLast(self, value):
-        self.app.hyphenateBeforeLast = value
-
-    @property
-    def hyphenateCapitalWords(self):
-        """True to allow hyphenation in word wrap of capitalized words"""
-        return self.app.hyphenateCapitalWords
-
-    @hyphenateCapitalWords.setter
-    def hyphenateCapitalWords(self, value):
-        self.app.hyphenateCapitalWords = value
-
-    @property
-    def hyphenateWordsLongerThan(self):
-        """The minimum number of letters a word must have in order for
-        hyphenation in word wrap to be allowed."""
-        return self.app.hyphenateWordsLongerThan
-
-    @hyphenateWordsLongerThan.setter
-    def hyphenateWordsLongerThan(self, value):
-        self.app.hyphenateWordsLongerThan = value
-
-    @property
     def hyphenation(self):
         """True to use hyphenation in word wrap."""
         return self.app.hyphenation
@@ -300,22 +264,131 @@ class TextItem(Photoshop):
         self.app.hyphenation = value
 
     @property
+    def hyphenateAfterFirst(self):
+        """The number of letters after which hyphenation in word wrap is allowed."""
+        try:
+            return self.app.hyphenateAfterFirst
+        except COMError as e:
+            raise PhotoshopPythonAPIError(
+                "Hyphenation must be enabled in order to access or modify hyphenation "
+                "related properties in a TextItem."
+            ) from e
+
+    @hyphenateAfterFirst.setter
+    def hyphenateAfterFirst(self, value):
+        try:
+            self.app.hyphenateAfterFirst = value
+        except COMError as e:
+            raise PhotoshopPythonAPIError(
+                "Hyphenation must be enabled in order to access or modify hyphenation "
+                "related properties in a TextItem."
+            ) from e
+
+    @property
+    def hyphenateBeforeLast(self):
+        """The number of letters before which hyphenation in word wrap is allowed."""
+        try:
+            return self.app.hyphenateBeforeLast
+        except COMError as e:
+            raise PhotoshopPythonAPIError(
+                "Hyphenation must be enabled in order to access or modify hyphenation "
+                "related properties in a TextItem."
+            ) from e
+
+    @hyphenateBeforeLast.setter
+    def hyphenateBeforeLast(self, value):
+        try:
+            self.app.hyphenateBeforeLast = value
+        except COMError as e:
+            raise PhotoshopPythonAPIError(
+                "Hyphenation must be enabled in order to access or modify hyphenation "
+                "related properties in a TextItem."
+            ) from e
+
+    @property
+    def hyphenateCapitalWords(self):
+        """True to allow hyphenation in word wrap of capitalized words"""
+        try:
+            return self.app.hyphenateCapitalWords
+        except COMError as e:
+            raise PhotoshopPythonAPIError(
+                "Hyphenation must be enabled in order to access or modify hyphenation "
+                "related properties in a TextItem."
+            ) from e
+
+    @hyphenateCapitalWords.setter
+    def hyphenateCapitalWords(self, value):
+        try:
+            self.app.hyphenateCapitalWords = value
+        except COMError as e:
+            raise PhotoshopPythonAPIError(
+                "Hyphenation must be enabled in order to access or modify hyphenation "
+                "related properties in a TextItem."
+            ) from e
+
+    @property
+    def hyphenateWordsLongerThan(self):
+        """The minimum number of letters a word must have in order for
+        hyphenation in word wrap to be allowed."""
+        try:
+            return self.app.hyphenateWordsLongerThan
+        except COMError as e:
+            raise PhotoshopPythonAPIError(
+                "Hyphenation must be enabled in order to access or modify hyphenation "
+                "related properties in a TextItem."
+            ) from e
+
+    @hyphenateWordsLongerThan.setter
+    def hyphenateWordsLongerThan(self, value):
+        try:
+            self.app.hyphenateWordsLongerThan = value
+        except COMError as e:
+            raise PhotoshopPythonAPIError(
+                "Hyphenation must be enabled in order to access or modify hyphenation "
+                "related properties in a TextItem."
+            ) from e
+
+    @property
     def hyphenationZone(self):
         """The distance at the end of a line that will cause a word to break in
         unjustified type."""
-        return self.app.hyphenationZone
+        try:
+            return self.app.hyphenationZone
+        except COMError as e:
+            raise PhotoshopPythonAPIError(
+                "Hyphenation must be enabled in order to access or modify hyphenation "
+                "related properties in a TextItem."
+            ) from e
 
     @hyphenationZone.setter
     def hyphenationZone(self, value):
-        self.app.hyphenationZone = value
+        try:
+            self.app.hyphenationZone = value
+        except COMError as e:
+            raise PhotoshopPythonAPIError(
+                "Hyphenation must be enabled in order to access or modify hyphenation "
+                "related properties in a TextItem."
+            ) from e
 
     @property
     def hyphenLimit(self):
-        return self.app.hyphenLimit
+        try:
+            return self.app.hyphenLimit
+        except COMError as e:
+            raise PhotoshopPythonAPIError(
+                "Hyphenation must be enabled in order to access or modify hyphenation "
+                "related properties in a TextItem."
+            ) from e
 
     @hyphenLimit.setter
     def hyphenLimit(self, value):
-        self.app.hyphenLimit = value
+        try:
+            self.app.hyphenLimit = value
+        except COMError as e:
+            raise PhotoshopPythonAPIError(
+                "Hyphenation must be enabled in order to access or modify hyphenation "
+                "related properties in a TextItem."
+            ) from e
 
     @property
     def justification(self):
@@ -483,48 +556,49 @@ class TextItem(Photoshop):
         self.app.minimumWordScaling = value
 
     @property
-    def noBreak(self):
+    def noBreak(self) -> bool:
         """True to disallow line breaks in this text.
 
         Tip: When true for many consecutive characters, can
-        prevent word wrap and thus may prevent some
-        text from appearing on the screen.
+            prevent word wrap and thus may prevent some
+            text from appearing on the screen.
 
         """
         return self.app.noBreak
 
     @noBreak.setter
-    def noBreak(self, value):
+    def noBreak(self, value: bool):
         self.app.noBreak = value
 
     @property
-    def oldStyle(self):
+    def oldStyle(self) -> bool:
         return self.app.oldStyle
 
     @oldStyle.setter
-    def oldStyle(self, value):
+    def oldStyle(self, value: bool):
         self.app.oldStyle = value
 
     @property
-    def parent(self):
-        return self.app.parent
-
-    @parent.setter
-    def parent(self, value):
-        self.app.parent = value
+    def parent(self) -> 'ArtLayer':
+        """The parent `ArtLayer` containing this `TextItem`. Note that some documentation sources
+            indicate that this is a writable property, however with COM automation this does not
+            appear to be possible."""
+        from photoshop.api._artlayer import ArtLayer
+        return ArtLayer(self.app.parent)
 
     @property
-    def position(self):
+    def position(self) -> tuple[Union[int, float], Union[int, float]]:
+        """The (x, y) position of the origin for the text."""
         return self.app.position
 
     @position.setter
-    def position(self, array):
-        """The position of the origin for the text.
+    def position(self, array: tuple[Union[int, float], Union[int, float]]):
+        """Set the (x, y) position of the origin for the text.
 
-        The array must contain two values. Setting this property is basically
-        equivalent to clicking the text tool at a point in the documents to
-        create the point of origin for text.
-
+        Args:
+            array: Must contain two values (x, y). Setting this property is
+                equivalent to clicking the text tool at a point in the document to
+                create the point of origin for text.
         """
         self.app.position = array
 
