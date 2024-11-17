@@ -14,12 +14,13 @@ The basic canvas for the file.
 """
 
 # Import built-in modules
+from __future__ import annotations
 from pathlib import Path
 from typing import List
-from typing import NoReturn
 from typing import Optional
 from typing import TypeVar
 from typing import Union
+from typing import TYPE_CHECKING
 
 # Import third-party modules
 from comtypes import COMError
@@ -27,6 +28,7 @@ from comtypes import COMError
 # Import local modules
 from photoshop.api._artlayer import ArtLayer
 from photoshop.api._artlayers import ArtLayers
+from photoshop.api._channel import Channel
 from photoshop.api._channels import Channels
 from photoshop.api._core import Photoshop
 from photoshop.api._documentinfo import DocumentInfo
@@ -40,6 +42,8 @@ from photoshop.api.enumerations import ExtensionType
 from photoshop.api.enumerations import SaveOptions
 from photoshop.api.enumerations import TrimType
 from photoshop.api.save_options import ExportOptionsSaveForWeb
+if TYPE_CHECKING:
+    from photoshop.api import Application
 
 
 # Custom types.
@@ -48,37 +52,29 @@ PS_Layer = TypeVar("PS_Layer", LayerSet, ArtLayer)
 
 # pylint: disable=too-many-public-methods
 class Document(Photoshop):
-    """The active containment object for the layers and all other objects in the script.
+    """An open Photoshop Document file and canvas which contains ArtLayers, LayerSets, etc."""  # noqa: E501
 
-    the basic canvas for the file.
-
-    """  # noqa: E501
-
-    object_name = "Application"
-
-    def __init__(self, parent):
-        super().__init__(parent=parent)
-        self._flag_as_method(
-            "autoCount",
-            "changeMode",
-            "close",
-            "convertProfile",
-            "Flatten",
-            "mergeVisibleLayers",
-            "crop",
-            "export",
-            "duplicate",
-            "printOneCopy",
-            "rasterizeAllLayers",
-            "recordMeasurements",
-            "revealAll",
-            "save",
-            "saveAs",
-            "splitChannels",
-            "trap",
-            "trim",
-            "resizeImage",
-        )
+    app_methods = [
+        "autoCount",
+        "changeMode",
+        "close",
+        "convertProfile",
+        "Flatten",
+        "mergeVisibleLayers",
+        "crop",
+        "export",
+        "duplicate",
+        "printOneCopy",
+        "rasterizeAllLayers",
+        "recordMeasurements",
+        "revealAll",
+        "save",
+        "saveAs",
+        "splitChannels",
+        "trap",
+        "trim",
+        "resizeImage",
+    ]
 
     @property
     def artLayers(self) -> ArtLayers:
@@ -87,30 +83,35 @@ class Document(Photoshop):
     @property
     def activeLayer(self) -> PS_Layer:
         """The selected layer."""
-        type_ = self.eval_javascript("app.activeDocument.activeLayer.typename")
-        mappings = {"LayerSet": LayerSet, "ArtLayer": ArtLayer}
-        func = mappings[type_]
-        return func(self.app.activeLayer)
+        _lyr = self.app.activeLayer
+        try:
+            _ = _lyr.kind
+            return ArtLayer(_lyr)
+        except (NameError, OSError, COMError):
+            return LayerSet(_lyr)
 
     @activeLayer.setter
-    def activeLayer(self, layer) -> NoReturn:
+    def activeLayer(self, layer: Union[ArtLayer, LayerSet]):
         """Sets the select layer as active layer.
 
         Args:
-            layer (._artlayer.ArtLayer or
-                   ._layerSet.LayerSet): The artLayer.
-
+            layer: Currently selected layer.
         """
         self.app.activeLayer = layer
 
     @property
-    def activeChannels(self):
-        """The selected channels."""
-        return self.app.activeChannels
+    def activeChannels(self) -> list[Channel]:
+        """The selected color channels."""
+        return [Channel(n) for n in self.app.activeChannels]
 
     @activeChannels.setter
-    def activeChannels(self, channels):
-        self.app.activeChannels = channels
+    def activeChannels(self, channels: list[Channel]):
+        """Sets the selected color channels.
+
+        Args:
+            channels: A list of `Channel` objects.
+        """
+        self.app.activeChannels = [n.app for n in channels]
 
     @property
     def activeHistoryBrushSource(self):
@@ -251,12 +252,12 @@ class Document(Photoshop):
         return self.app.name
 
     @property
-    def parent(self):
-        """The object's container."""
-        return self.app.Parent
+    def parent(self) -> 'Application':
+        """The `Application` containing this `Document`."""
+        return self.root_application
 
     @property
-    def path(self) -> str:
+    def path(self) -> Path:
         """The path to the Document."""
         try:
             return Path(self.app.path)
@@ -266,7 +267,7 @@ class Document(Photoshop):
             )
 
     @path.setter
-    def path(self, path: str) -> NoReturn:
+    def path(self, path: str):
         self.app.fullName = path
 
     @property
@@ -306,11 +307,6 @@ class Document(Photoshop):
     def selection(self):
         """The selected area of the Document."""
         return Selection(self.app.selection)
-
-    @property
-    def typename(self):
-        """The class name of the object."""
-        return self.app.typename
 
     @property
     def cloudDocument(self):
@@ -417,13 +413,14 @@ class Document(Photoshop):
         """Saves the Document."""
         return self.app.save()
 
-    def saveAs(self, file_path, options, asCopy=True, extensionType=ExtensionType.Lowercase):
+    def saveAs(self, file_path, options, asCopy=True, extensionType=ExtensionType.Lowercase) -> None:
         """Saves the documents with the specified save options.
 
         Args:
             file_path (str): Absolute path of psd file.
             options (JPEGSaveOptions): Save options.
-            asCopy (bool):
+            asCopy (bool): Whether to save using Photoshop's "as copy" functionality.
+            extensionType (ExtensionType): File extension type the document will be saved as.
         """
         return self.app.saveAs(file_path, options, asCopy, extensionType)
 
@@ -458,17 +455,17 @@ class Document(Photoshop):
         """Trims the transparent area around the image on the specified sides of the canvas.
 
         Args:
-            trim_type: The color or type of pixels to base the trim on.
+            trim_type (bool): The color or type of pixels to base the trim on.
 
                 Examples:
                     - TrimType.BottomRightPixel
                     - TrimType.TopLeftPixel
                     - TrimType.TransparentPixels
 
-            top: If true, trims away the top of the document.
-            left: If true, trims away the left of the document.
-            bottom: If true, trims away the bottom of the document.
-            right: If true, trims away the right of the document.
+            top (bool): If true, trims away the top of the document.
+            left (bool): If true, trims away the left of the document.
+            bottom (bool): If true, trims away the bottom of the document.
+            right (bool): If true, trims away the right of the document.
 
         """
         return self.app.trim(trim_type, top, left, bottom, right)
