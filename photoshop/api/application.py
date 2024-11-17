@@ -23,11 +23,9 @@ from typing import Union
 from _ctypes import COMError
 
 # Import local modules
-from photoshop.api._artlayer import ArtLayer
 from photoshop.api._core import Photoshop
 from photoshop.api._document import Document
 from photoshop.api._documents import Documents
-from photoshop.api._layerSets import LayerSets
 from photoshop.api._measurement_log import MeasurementLog
 from photoshop.api._notifiers import Notifiers
 from photoshop.api._preferences import Preferences
@@ -44,7 +42,15 @@ class Application(Photoshop):
     This is the root of the object model, and provides access to all other objects.
     To access the properties and methods, you can use the pre-defined global variable app.
 
+    Args:
+        version: Manually provide a Photoshop version to use when creating dispatch objects
+            for Photoshop, e.g. 2023, 2024, 2025, etc.
+        singleton: Pass False if you wish to create a new object instead of caching
+            and reusing one Application object as a singleton. Defaults to True.
+
     """
+    _app_initialized = False
+    _app_instance = None
 
     app_methods = [
         "batch",
@@ -70,37 +76,36 @@ class Application(Photoshop):
         "typeIDToStringID",
     ]
 
-    def __new__(cls, *args, **kwargs):
-        """Ensures that only one instance of `Application` exists at a time."""
-        if not hasattr(cls, "_app_instance"):
-            cls._app_instance = super().__new__(cls)
-            cls._app_initialized = False
-        return cls._app_instance
+    def __new__(cls, version: Optional[str] = None, singleton: bool = True):
+        """Ensures that only one instance of `Application` exists at a time, unless
+            False is passed to `singleton` in the constructor."""
+        if singleton is False or Application._app_instance is None:
+            return super().__new__(cls)
+        return Application._app_instance
 
-    def __init__(self, version: Optional[str] = None):
-        """Skips initialization on subsequent calls."""
-        if not self._app_initialized:
+    def __init__(self, version: Optional[str] = None, singleton: bool = True):
+        """Skips initialization on subsequent calls unless `False` passed to singleton."""
+        if not singleton:
             super().__init__(ps_version=version)
-            self._app_initialized = True
-
-    @property
-    def activeLayer(self) -> ArtLayer:
-        return ArtLayer(self.app.ArtLayer)
-
-    @property
-    def layerSets(self) -> LayerSets:
-        return LayerSets(self.app.LayerSets)
+        elif not self._app_initialized:
+            super().__init__(ps_version=version)
+            Application._app_initialized = True
+            Application._app_instance = self
 
     @property
     def activeDocument(self) -> Document:
-        """The front-most documents.
+        """The front-most document.
 
-        Setting this property is equivalent to clicking an
-        open document in the Adobe Photoshop CC
-        application to bring it to the front of the screen.
+        Setting this property is equivalent to clicking an open document in Photoshop
+        to bring it to the front of the screen.
 
         """
-        return Document(self.app.activeDocument)
+        try:
+            return Document(self.app.activeDocument)
+        except COMError as e:
+            if 'Invalid index' in e.text:
+                raise PhotoshopPythonAPIError('There are no documents open in Photoshop.') from e
+            raise PhotoshopPythonAPIError('Encountered an error while trying to access the active document.') from e
 
     @activeDocument.setter
     def activeDocument(self, document: Document):
@@ -246,11 +251,6 @@ class Application(Photoshop):
         self.app.notifiersEnabled = value
 
     @property
-    def parent(self):
-        """The object’s container."""
-        return self.app.parent
-
-    @property
     def path(self) -> Path:
         """str: The full path to the location of the Photoshop application."""
         return Path(self.app.path)
@@ -355,7 +355,7 @@ class Application(Photoshop):
             javascript,
         )
         self.eval_javascript(script)
-        # Ensure the script execute success.
+        # Ensure the script executes successfully
         time.sleep(1)
 
     def doProgressSegmentTask(self, segmentLength, done, total, javascript):
