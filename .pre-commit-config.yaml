@@ -27,8 +27,6 @@ repos:
     rev: 3.7.9
     hooks:
     -   id: flake8
-        additional_dependencies:
-        -   flake8-typing-imports==1.5.0
 # AutoPEP8 | Formats code to the PEP 8 style guide
 -   repo: https://github.com/hhatto/autopep8
     rev: v2.3.1

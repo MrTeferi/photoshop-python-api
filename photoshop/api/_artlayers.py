@@ -1,51 +1,86 @@
+# Import built-in modules
+from contextlib import suppress
+from typing import Any
+from typing import TYPE_CHECKING
+from typing import Union
+
 # Import third-party modules
+from _ctypes import COMError
 from comtypes import ArgumentError
+from comtypes.client.lazybind import Dispatch
 
 # Import local modules
 from photoshop.api._artlayer import ArtLayer
 from photoshop.api._core import Photoshop
-from photoshop.api.errors import PhotoshopPythonAPIError
+
+
+if TYPE_CHECKING:
+    from photoshop.api._document import Document  # noqa:F401 isort:skip
+    from photoshop.api._layerSet import LayerSet  # noqa:F401 isort:skip
 
 
 # pylint: disable=too-many-public-methods
 class ArtLayers(Photoshop):
-    """The collection of art layer objects in the document."""
+    """A collection of `ArtLayer` objects in a `Document` or `LayerSet`."""
 
-    def __init__(self, parent):
-        super().__init__(parent=parent)
-        self._flag_as_method(
-            "add",
-        )
-
-    @property
-    def _layers(self):
-        return list(self.app)
+    app_methods = ["add"]
 
     def __len__(self):
         return self.length
 
     def __iter__(self):
         for layer in self.app:
-            yield layer
+            yield ArtLayer(layer)
 
     def __getitem__(self, key: str):
-        """Access a given ArtLayer using dictionary key lookup."""
+        """Access a given ArtLayer using dictionary key lookup, where name of the ArtLayer is key."""
         try:
             return ArtLayer(self.app[key])
-        except ArgumentError:
-            raise PhotoshopPythonAPIError(f'Could not find an artLayer named "{key}"')
+        except (ArgumentError, COMError, KeyError):
+            raise KeyError(f'Could not find an ArtLayer named "{key}"')
 
     @property
-    def length(self):
+    def _layers(self) -> list[Dispatch]:
+        """Private property that returns a list containing a Dispatch object for each
+        `ArtLayer` in this collection."""
+        return list(self.app)
+
+    @property
+    def length(self) -> int:
+        """The number of `ArtLayer` objects in this collection."""
         return len(self._layers)
 
     @property
-    def parent(self):
-        return self.app.parent
+    def parent(self) -> Union["Document", "LayerSet"]:
+        """The parent `Document` or `LayerSet` containing this `ArtLayers` collection."""
+        _parent = self.app.parent
+        try:
+            # Parent is a Document
+            _ = _parent.path
+            from photoshop.api._document import Document  # noqa:F811 isort:skip
 
-    @property
-    def typename(self):
-        return self.app.typename
+            return Document(_parent)
+        except (COMError, NameError, OSError):
+            # Parent is a LayerSet
+            from photoshop.api._layerSet import LayerSet  # noqa:F811 isort:skip
+
+            return LayerSet(_parent)
+
+    def get(self, key: str, default: Any = None) -> ArtLayer:
+        """Access a given ArtLayer using dictionary key lookup, where name of the ArtLayer is key. You can
+            provide an optional default value to return if the key does not exist, otherwise will return None.
+
+        Args:
+            key: The name of the ArtLayer to lookup.
+            default: The default value to return if the key does not exist, defaults to None.
+
+        Returns:
+            ArtLayer if key is found, otherwise default value.
+        """
+        try:
+            return self[key]
+        except KeyError:
+            return default
 
     def add(self):
         """Adds an element."""
@@ -58,15 +93,16 @@ class ArtLayers(Photoshop):
     def getByName(self, name: str) -> ArtLayer:
         """Get the first element in the collection with the provided name.
 
+        Args:
+            name: The name of the ArtLayer to lookup.
+
         Raises:
-            PhotoshopPythonAPIError: Could not find a artLayer.
+            PhotoshopPythonAPIError: If an ArtLayer with the provided name couldn't be found.
         """
-        for layer in self.app:
-            if layer.name == name:
-                return ArtLayer(layer)
-        raise PhotoshopPythonAPIError(f'Could not find an artLayer named "{name}"')
+        return self[name]
 
     def removeAll(self):
         """Deletes all elements."""
-        for layer in self.app:
-            ArtLayer(layer).remove()
+        for n in self._layers:
+            with suppress(Exception):
+                n.remove()
