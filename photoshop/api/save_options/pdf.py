@@ -18,6 +18,7 @@ class PDFSaveOptions(Photoshop):
     object_name = "PDFSaveOptions"
 
     def __init__(self, **kwargs):
+        # Todo: Add full kwargs support to each save_options class
         super().__init__()
         self.layers = False
         self.jpegQuality = 12
