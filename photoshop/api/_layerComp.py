@@ -1,18 +1,18 @@
+# Import built-in modules
+from __future__ import annotations
+from typing import TYPE_CHECKING
+
 # Import local modules
 from photoshop.api._core import Photoshop
+if TYPE_CHECKING:
+    from photoshop.api._document import Document
 
 
 class LayerComp(Photoshop):
-    """A snapshot of a state of the layers in a document (can be used to view different page layouts or compostions)."""
+    """A snapshot of a state of the layers in a document (can be used to view
+    different page layouts or compositions)."""
 
-    def __init__(self, parent):
-        super().__init__(parent=parent)
-        self._flag_as_method(
-            "apply",
-            "recapture",
-            "remove",
-            "resetfromComp",
-        )
+    app_methods = ["apply", "recapture", "remove", "resetfromComp"]
 
     def __len__(self):
         return self.length
@@ -50,8 +50,10 @@ class LayerComp(Photoshop):
         self.app.name = text
 
     @property
-    def parent(self):
-        return self.app.parent
+    def parent(self) -> 'Document':
+        """The parent `Document` containing this `LayerComp`."""
+        from photoshop.api._document import Document
+        return Document(self.app.parent)
 
     @property
     def position(self):
@@ -69,10 +71,6 @@ class LayerComp(Photoshop):
     @selected.setter
     def selected(self, value):
         self.app.selected = value
-
-    @property
-    def typename(self):
-        return self.app.typename
 
     @property
     def visibility(self):
@@ -96,5 +94,5 @@ class LayerComp(Photoshop):
         self.app.remove()
 
     def resetfromComp(self):
-        """Resets the layer comp state to thedocument state."""
+        """Resets the layer comp state to the document state."""
         self.app.resetfromComp()
