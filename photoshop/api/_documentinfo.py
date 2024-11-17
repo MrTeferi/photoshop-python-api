@@ -2,7 +2,6 @@
 
 These values can be set by selecting File > File Info in the Adobe Photoshop
 application.
-
 """
 
 # Import built-in modules
@@ -15,9 +14,6 @@ from photoshop.api._core import Photoshop
 # pylint: disable=too-many-public-methods
 class DocumentInfo(Photoshop):
     """Metadata about a document object."""
-
-    def __init__(self, parent):
-        super().__init__(parent=parent)
 
     def __str__(self):
         return pformat(
@@ -45,7 +41,7 @@ class DocumentInfo(Photoshop):
                 "title": self.title,
                 "transmissionReference": self.transmissionReference,
                 "urgency": self.urgency,
-            }
+            },
         )
 
     @property
