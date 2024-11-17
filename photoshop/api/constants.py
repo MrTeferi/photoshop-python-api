@@ -10,3 +10,7 @@ PHOTOSHOP_VERSION_MAPPINGS = {
     "2018": "120",
     "2017": "110",
 }
+
+PHOTOSHOP_YEAR_MAPPINGS = {
+    v: k for k, v in PHOTOSHOP_VERSION_MAPPINGS.items()
+}
