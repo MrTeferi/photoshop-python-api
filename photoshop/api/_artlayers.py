@@ -105,4 +105,4 @@ class ArtLayers(Photoshop):
         """Deletes all elements."""
         for n in self._layers:
             with suppress(Exception):
-                n.remove()
+                n.delete()
