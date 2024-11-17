@@ -6,26 +6,22 @@ from photoshop.api.errors import PhotoshopPythonAPIError
 
 # pylint: disable=too-many-public-methods
 class Channels(Photoshop):
-    def __init__(self, parent):
-        super().__init__(parent=parent)
-        self._flag_as_method(
-            "add",
-            "removeAll",
-        )
-
-    @property
-    def _channels(self):
-        return list(self.app)
+    app_methods = ["add", "removeAll"]
 
     def __len__(self):
         return self.length
 
     def __iter__(self):
-        for layer in self.app:
-            yield layer
+        for channel in self.app:
+            yield Channel(channel)
 
-    def __getitem__(self, item):
-        return self.app[item]
+    def __getitem__(self, index: int):
+        """Access a given Channel using its index in the array."""
+        return Channel(self.app[index])
+
+    @property
+    def _channels(self):
+        return list(self.app)
 
     @property
     def length(self):
