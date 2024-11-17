@@ -1,3 +1,28 @@
+## v0.22.8 (2024-11-03)
+
+### Fix
+
+- **deps**: update dependency comtypes to v1.4.8
+
+## v0.22.7 (2024-11-01)
+
+### Fix
+
+- **api/application**: Update return type hint for activeDocument method
+
+## v0.22.6 (2024-11-01)
+
+### Fix
+
+- fix publish to pypi
+
+## v0.22.5 (2024-11-01)
+
+### Fix
+
+- deploy version to 0.22.5
+- **version**: Add support for Photoshop 190 (2025)
+
 ## v0.22.4 (2023-12-04)
 
 ### Fix
