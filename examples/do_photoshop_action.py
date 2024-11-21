@@ -1,4 +1,5 @@
 """Do a photoshop action."""
+
 # Import local modules
 from photoshop import Session
 

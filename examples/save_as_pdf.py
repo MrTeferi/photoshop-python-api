@@ -1,4 +1,5 @@
 """Save current active document as a PDF file."""
+
 # Import built-in modules
 import os
 from tempfile import mkdtemp

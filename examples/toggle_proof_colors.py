@@ -4,6 +4,7 @@ Like operating in the menu:
 **View** > **Proof Colors** (Ctrl + Y)
 
 """
+
 # Import local modules
 from photoshop import Session
 

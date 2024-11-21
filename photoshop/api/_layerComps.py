@@ -1,5 +1,7 @@
-# Import built-in modules
+# Import future modules
 from __future__ import annotations
+
+# Import built-in modules
 from typing import TYPE_CHECKING
 
 # Import third-party modules
@@ -9,8 +11,10 @@ from comtypes import ArgumentError
 from photoshop.api._core import Photoshop
 from photoshop.api._layerComp import LayerComp
 from photoshop.api.errors import PhotoshopPythonAPIError
+
+
 if TYPE_CHECKING:
-    from photoshop.api._document import Document
+    from photoshop.api._document import Document  # noqa:F401 isort:skip
 
 
 class LayerComps(Photoshop):
@@ -40,13 +44,14 @@ class LayerComps(Photoshop):
     @property
     def _layers(self):
         """Private property that returns a list containing a Dispatch object for each
-            `LayerComp` in this collection."""
+        `LayerComp` in this collection."""
         return list(self.app)
 
     @property
-    def parent(self) -> 'Document':
+    def parent(self) -> Document:
         """The parent `Document` containing this `LayerComps` collection."""
-        from photoshop.api._document import Document
+        from photoshop.api._document import Document  # noqa:F811 isort:skip
+
         return Document(self.app.parent)
 
     def add(

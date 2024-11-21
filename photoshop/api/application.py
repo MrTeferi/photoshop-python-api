@@ -49,6 +49,7 @@ class Application(Photoshop):
             and reusing one Application object as a singleton. Defaults to True.
 
     """
+
     _app_initialized = False
     _app_instance = None
 
@@ -78,7 +79,7 @@ class Application(Photoshop):
 
     def __new__(cls, version: Optional[str] = None, singleton: bool = True, **_kw):
         """Ensures that only one instance of `Application` exists at a time, unless
-            False is passed to `singleton` in the constructor."""
+        False is passed to `singleton` in the constructor."""
         if singleton is False or Application._app_instance is None:
             return super().__new__(cls)
         return Application._app_instance
@@ -103,9 +104,9 @@ class Application(Photoshop):
         try:
             return Document(self.app.activeDocument)
         except COMError as e:
-            if 'Invalid index' in e.text:
-                raise PhotoshopPythonAPIError('There are no documents open in Photoshop.') from e
-            raise PhotoshopPythonAPIError('Encountered an error while trying to access the active document.') from e
+            if "Invalid index" in e.text:
+                raise PhotoshopPythonAPIError("There are no documents open in Photoshop.") from e
+            raise PhotoshopPythonAPIError("Encountered an error while trying to access the active document.") from e
 
     @activeDocument.setter
     def activeDocument(self, document: Document):

@@ -1,4 +1,5 @@
 """Action for duplicate current active document."""
+
 # Import local modules
 from photoshop import Session
 

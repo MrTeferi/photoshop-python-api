@@ -1,6 +1,10 @@
+# Import future modules
+from __future__ import annotations
+
 # Import built-in modules
 from contextlib import suppress
-from typing import Union, TYPE_CHECKING, Iterator
+from typing import Iterator
+from typing import TYPE_CHECKING
 
 # Import third-party modules
 from _ctypes import COMError
@@ -8,8 +12,10 @@ from _ctypes import COMError
 # Import local modules
 from photoshop.api._artlayer import ArtLayer
 from photoshop.api._core import Photoshop
+
+
 if TYPE_CHECKING:
-    from photoshop.api._layerSet import LayerSet
+    from photoshop.api._layerSet import LayerSet  # noqa:F401 isort:skip
 
 
 # pylint: disable=too-many-public-methods
@@ -18,7 +24,7 @@ class Layers(Photoshop):
 
     app_methods = ["add", "item"]
 
-    def __getitem__(self, item: Union[int, str]) -> Union[ArtLayer, 'LayerSet']:
+    def __getitem__(self, item: int | str) -> ArtLayer | LayerSet:
         """Retrieve an ArtLayer or LayerSet from this Layers collection by name
             (if provided as a string) or index (if provided as an integer) within
             the collection array.
@@ -38,13 +44,14 @@ class Layers(Photoshop):
             return self.item(item)
         return self.getByName(item)
 
-    def __iter__(self) -> Iterator[Union[ArtLayer, 'LayerSet']]:
+    def __iter__(self) -> Iterator[ArtLayer | LayerSet]:
         for layer in self.app:
             try:
                 _ = layer.kind
                 yield ArtLayer(layer)
             except (COMError, NameError, OSError):
-                from photoshop.api._layerSet import LayerSet
+                from photoshop.api._layerSet import LayerSet  # noqa:F811 isort:skip
+
                 yield LayerSet(layer)
 
     def __len__(self):
@@ -58,7 +65,7 @@ class Layers(Photoshop):
     def length(self):
         return len(self._layers)
 
-    def getByName(self, name: str) -> Union[ArtLayer, 'LayerSet']:
+    def getByName(self, name: str) -> ArtLayer | LayerSet:
         """Get the first element in the Layers collection with the provided name.
 
         Args:
@@ -76,12 +83,13 @@ class Layers(Photoshop):
                 _ = layer.kind
                 return ArtLayer(layer)
             except NameError:
-                from photoshop.api._layerSet import LayerSet
+                from photoshop.api._layerSet import LayerSet  # noqa:F811 isort:skip
+
                 return LayerSet(layer)
         except (KeyError, COMError) as e:
-            raise KeyError(f"Layer with name '{name}' not found in this layer collection.") from e
+            raise KeyError(f"No layer with name '{name}' found in this collection.") from e
 
-    def item(self, index: int) -> Union[ArtLayer, 'LayerSet']:
+    def item(self, index: int) -> ArtLayer | LayerSet:
         """Retrieve an item from the Layers collection by index in the array.
 
         Args:
@@ -100,10 +108,11 @@ class Layers(Photoshop):
                 _ = layer.kind
                 return ArtLayer(layer)
             except NameError:
-                from photoshop.api._layerSet import LayerSet
+                from photoshop.api._layerSet import LayerSet  # noqa:F811 isort:skip
+
                 return LayerSet(layer)
         except (IndexError, COMError) as e:
-            raise IndexError(f"Index [{index}] is outside the range of this layer collection.") from e
+            raise IndexError(f"No layer with index [{index}] found in this collection.") from e
 
     def removeAll(self):
         """Deletes all elements."""

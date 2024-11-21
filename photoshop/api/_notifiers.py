@@ -9,8 +9,10 @@ Examples:
     ```
 
 """
+
 # Import built-in modules
-from typing import Any, Iterator
+from typing import Any
+from typing import Iterator
 from typing import Optional
 
 # Import third-party modules
@@ -18,14 +20,14 @@ from comtypes import ArgumentError
 from comtypes.client.lazybind import Dispatch
 
 # Import local modules
-from photoshop.api.errors import PhotoshopPythonAPIError
 from photoshop.api._core import Photoshop
 from photoshop.api._notifier import Notifier
+from photoshop.api.errors import PhotoshopPythonAPIError
 
 
 class Notifiers(Photoshop):
     """An array collection of each `Notifier` currently configured (in the Scripts Events Manager
-        menu in Photoshop)."""
+    menu in Photoshop)."""
 
     app_methods = ["add", "removeAll"]
 
@@ -41,12 +43,12 @@ class Notifiers(Photoshop):
         try:
             return Notifier(self._notifiers[item])
         except ArgumentError:
-            raise PhotoshopPythonAPIError(f'Could not find a Notifier with index {item}')
+            raise PhotoshopPythonAPIError(f"Could not find a Notifier with index {item}")
 
     @property
     def _notifiers(self) -> list[Dispatch]:
         """Private property that returns a list containing a Dispatch object for each
-            `Notifier` in this collection."""
+        `Notifier` in this collection."""
         return list(self.app)
 
     @property
@@ -54,10 +56,7 @@ class Notifiers(Photoshop):
         """The number of `Notifier` objects in this collection."""
         return len(self._notifiers)
 
-    def add(
-        self, event: str, event_file: Optional[Any] = None,
-        event_class: Optional[Any] = None
-    ) -> Notifier:
+    def add(self, event: str, event_file: Optional[Any] = None, event_class: Optional[Any] = None) -> Notifier:
         """Add a `Notifier` to the collection."""
         self.parent.notifiersEnabled = True
         return Notifier(self.app.add(event, event_file, event_class))

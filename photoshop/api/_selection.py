@@ -1,6 +1,9 @@
 """The selected area of the document or layer."""
-# Import built-in modules
+
+# Import future modules
 from __future__ import annotations
+
+# Import built-in modules
 from typing import TYPE_CHECKING
 
 # Import local modules
@@ -8,8 +11,10 @@ from photoshop.api._core import Photoshop
 from photoshop.api.enumerations import ColorBlendMode
 from photoshop.api.enumerations import SelectionType
 from photoshop.api.solid_color import SolidColor
+
+
 if TYPE_CHECKING:
-    from photoshop.api._document import Document
+    from photoshop.api._document import Document  # noqa:F401 isort:skip
 
 
 # pylint: disable=too-many-public-methods, too-many-arguments
@@ -48,8 +53,9 @@ class Selection(Photoshop):
         return self.app.bounds
 
     @property
-    def parent(self) -> 'Document':
-        from photoshop.api._document import Document
+    def parent(self) -> Document:
+        from photoshop.api._document import Document  # noqa:F811 isort:skip
+
         return Document(self.app.parent)
 
     @property

@@ -13,14 +13,13 @@ The basic canvas for the file.
 
 """
 
-# Import built-in modules
+# Import future modules
 from __future__ import annotations
+
+# Import built-in modules
 from pathlib import Path
-from typing import List
-from typing import Optional
-from typing import TypeVar
-from typing import Union
 from typing import TYPE_CHECKING
+from typing import TypeVar
 
 # Import third-party modules
 from comtypes import COMError
@@ -42,8 +41,10 @@ from photoshop.api.enumerations import ExtensionType
 from photoshop.api.enumerations import SaveOptions
 from photoshop.api.enumerations import TrimType
 from photoshop.api.save_options import ExportOptionsSaveForWeb
+
+
 if TYPE_CHECKING:
-    from photoshop.api import Application
+    from photoshop.api import Application  # noqa:F401 isort:skip
 
 
 # Custom types.
@@ -91,7 +92,7 @@ class Document(Photoshop):
             return LayerSet(_lyr)
 
     @activeLayer.setter
-    def activeLayer(self, layer: Union[ArtLayer, LayerSet]):
+    def activeLayer(self, layer: ArtLayer | LayerSet):
         """Sets the select layer as active layer.
 
         Args:
@@ -252,7 +253,7 @@ class Document(Photoshop):
         return self.app.name
 
     @property
-    def parent(self) -> 'Application':
+    def parent(self) -> Application:
         """The `Application` containing this `Document`."""
         return self.get_root_application()
 
@@ -353,10 +354,10 @@ class Document(Photoshop):
 
     def crop(
         self,
-        bounds: List[int],
-        angle: Optional[float] = None,
-        width: Optional[int] = None,
-        height: Optional[int] = None,
+        bounds: list[int],
+        angle: float | None = None,
+        width: int | None = None,
+        height: int | None = None,
     ):
         """Crops the document.
 
@@ -369,7 +370,7 @@ class Document(Photoshop):
         """
         return self.app.crop(bounds, angle, width, height)
 
-    def exportDocument(self, file_path: str, exportAs: ExportType, options: Union[ExportOptionsSaveForWeb]):
+    def exportDocument(self, file_path: str, exportAs: ExportType, options: ExportOptionsSaveForWeb):
         """Exports the Document.
 
         Note:
@@ -447,10 +448,10 @@ class Document(Photoshop):
     def trim(
         self,
         trim_type: TrimType,
-        top: Optional[bool] = True,
-        left: Optional[bool] = True,
-        bottom: Optional[bool] = True,
-        right: Optional[bool] = True,
+        top: bool | None = True,
+        left: bool | None = True,
+        bottom: bool | None = True,
+        right: bool | None = True,
     ):
         """Trims the transparent area around the image on the specified sides of the canvas.
 

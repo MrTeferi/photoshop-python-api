@@ -1,6 +1,8 @@
-# Import built-in modules
+# Import future modules
 from __future__ import annotations
-from typing import Union, TYPE_CHECKING, Optional
+
+# Import built-in modules
+from typing import TYPE_CHECKING
 
 # Import third-party modules
 from _ctypes import COMError
@@ -12,11 +14,13 @@ from photoshop.api._artlayers import ArtLayers
 from photoshop.api._core import Photoshop
 from photoshop.api._layers import Layers
 from photoshop.api.enumerations import AnchorPosition
-from photoshop.api.enumerations import ElementPlacement
 from photoshop.api.enumerations import BlendMode
+from photoshop.api.enumerations import ElementPlacement
+
+
 if TYPE_CHECKING:
-    from photoshop.api._document import Document
-    from photoshop.api._layerSets import LayerSets
+    from photoshop.api._document import Document  # noqa:F401 isort:skip
+    from photoshop.api._layerSets import LayerSets  # noqa:F401 isort:skip
 
 
 class LayerSet(Photoshop):
@@ -27,7 +31,7 @@ class LayerSet(Photoshop):
 
     app_methods = ["merge", "duplicate", "add", "delete", "link", "move", "resize", "rotate", "translate", "unlink"]
 
-    def __getitem__(self, item: Union[int, str]) -> Union[ArtLayer, LayerSet]:
+    def __getitem__(self, item: int | str) -> ArtLayer | LayerSet:
         """Retrieve an ArtLayer or LayerSet from this LayerSet by name (if provided
             as a string) or index (if provided as an integer) within the layers array.
 
@@ -44,8 +48,7 @@ class LayerSet(Photoshop):
         return self.layers[item]
 
     def __iter__(self):
-        for layer in self.layers:
-            yield layer
+        yield from self.layers
 
     def __len__(self):
         return self.length
@@ -91,6 +94,7 @@ class LayerSet(Photoshop):
     def layerSets(self) -> LayerSets:
         # pylint: disable=import-outside-toplevel
         from ._layerSets import LayerSets
+
         return LayerSets(self.app.layerSets)
 
     @property
@@ -121,22 +125,23 @@ class LayerSet(Photoshop):
         self.app.opacity = value
 
     @property
-    def parent(self) -> Union['Document', LayerSet]:
+    def parent(self) -> Document | LayerSet:
         """The parent `Document` or `LayerSet` containing this `LayerSet`."""
         _parent = self.app.parent
         try:
             # Parent is a Document
             _ = _parent.path
-            from photoshop.api._document import Document
+            from photoshop.api._document import Document  # noqa:F811 isort:skip
+
             return Document(_parent)
         except (COMError, NameError, OSError):
             # Parent is a LayerSet
             return LayerSet(_parent)
 
     @parent.setter
-    def parent(self, parent: Union['Document', 'LayerSet']):
+    def parent(self, parent: Document | LayerSet):
         """Set the object’s parent container."""
-        if parent.__class__.__name__ == 'Document':
+        if parent.__class__.__name__ == "Document":
             # Move to another Document
             _new = self.duplicate(parent, ElementPlacement.PlaceAtBeginning)
             self.remove()
@@ -154,8 +159,9 @@ class LayerSet(Photoshop):
         self.app.visible = value
 
     def duplicate(
-        self, relativeObject: Optional[Union[ArtLayer, 'Document', 'LayerSet']] = None,
-        insertionLocation: Optional[ElementPlacement] = None
+        self,
+        relativeObject: ArtLayer | Document | LayerSet | None = None,
+        insertionLocation: ElementPlacement | None = None,
     ):
         """Duplicate this `LayerSet` and place the duplicate relative to another `ArtLayer`,
             `Document`, or `LayerSet`.
@@ -174,7 +180,8 @@ class LayerSet(Photoshop):
             The duplicate `LayerSet` object.
         """
         if isinstance(relativeObject, LayerSet) and ElementPlacement not in [
-            ElementPlacement.PlaceBefore, ElementPlacement.PlaceAfter
+            ElementPlacement.PlaceBefore,
+            ElementPlacement.PlaceAfter,
         ]:
             _temp = relativeObject.add()
             if insertionLocation == ElementPlacement.PlaceAtEnd:
@@ -203,8 +210,9 @@ class LayerSet(Photoshop):
         return ArtLayer(self.app.merge())
 
     def move(
-        self, relativeObject: Optional[Union[ArtLayer, 'Document', 'LayerSet']] = None,
-        insertionLocation: Optional[ElementPlacement] = None
+        self,
+        relativeObject: ArtLayer | Document | LayerSet | None = None,
+        insertionLocation: ElementPlacement | None = None,
     ) -> None:
         """Move this `LayerSet` relative to another `ArtLayer`, `Document`, or `LayerSet`.
 
@@ -219,7 +227,8 @@ class LayerSet(Photoshop):
                 relativeObject. Should be provided as an ElementPlacement enum.
         """
         if isinstance(relativeObject, LayerSet) and ElementPlacement not in [
-            ElementPlacement.PlaceBefore, ElementPlacement.PlaceAfter
+            ElementPlacement.PlaceBefore,
+            ElementPlacement.PlaceAfter,
         ]:
             _temp = relativeObject.add()
             if insertionLocation == ElementPlacement.PlaceAtEnd:

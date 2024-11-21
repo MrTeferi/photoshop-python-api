@@ -1,7 +1,11 @@
-# Import built-in modules
+# Import future modules
 from __future__ import annotations
+
+# Import built-in modules
+from typing import TYPE_CHECKING
+
+# Import third-party modules
 from _ctypes import COMError
-from typing import TYPE_CHECKING, Union
 
 # Import local modules
 from photoshop.api._core import Photoshop
@@ -15,8 +19,10 @@ from photoshop.api.enumerations import TextComposer
 from photoshop.api.enumerations import TextType
 from photoshop.api.errors import PhotoshopPythonAPIError
 from photoshop.api.solid_color import SolidColor
+
+
 if TYPE_CHECKING:
-    from photoshop.api._artlayer import ArtLayer
+    from photoshop.api._artlayer import ArtLayer  # noqa:F401 isort:skip
 
 
 class TextItem(Photoshop):
@@ -270,8 +276,7 @@ class TextItem(Photoshop):
             return self.app.hyphenateAfterFirst
         except COMError as e:
             raise PhotoshopPythonAPIError(
-                "Hyphenation must be enabled in order to access or modify hyphenation "
-                "related properties in a TextItem."
+                "Hyphenation must be enabled to access or modify hyphen-related properties in a TextItem.",
             ) from e
 
     @hyphenateAfterFirst.setter
@@ -280,8 +285,7 @@ class TextItem(Photoshop):
             self.app.hyphenateAfterFirst = value
         except COMError as e:
             raise PhotoshopPythonAPIError(
-                "Hyphenation must be enabled in order to access or modify hyphenation "
-                "related properties in a TextItem."
+                "Hyphenation must be enabled to access or modify hyphen-related properties in a TextItem.",
             ) from e
 
     @property
@@ -291,8 +295,7 @@ class TextItem(Photoshop):
             return self.app.hyphenateBeforeLast
         except COMError as e:
             raise PhotoshopPythonAPIError(
-                "Hyphenation must be enabled in order to access or modify hyphenation "
-                "related properties in a TextItem."
+                "Hyphenation must be enabled to access or modify hyphen-related properties in a TextItem.",
             ) from e
 
     @hyphenateBeforeLast.setter
@@ -301,8 +304,7 @@ class TextItem(Photoshop):
             self.app.hyphenateBeforeLast = value
         except COMError as e:
             raise PhotoshopPythonAPIError(
-                "Hyphenation must be enabled in order to access or modify hyphenation "
-                "related properties in a TextItem."
+                "Hyphenation must be enabled to access or modify hyphen-related properties in a TextItem.",
             ) from e
 
     @property
@@ -312,8 +314,7 @@ class TextItem(Photoshop):
             return self.app.hyphenateCapitalWords
         except COMError as e:
             raise PhotoshopPythonAPIError(
-                "Hyphenation must be enabled in order to access or modify hyphenation "
-                "related properties in a TextItem."
+                "Hyphenation must be enabled to access or modify hyphen-related properties in a TextItem.",
             ) from e
 
     @hyphenateCapitalWords.setter
@@ -322,8 +323,7 @@ class TextItem(Photoshop):
             self.app.hyphenateCapitalWords = value
         except COMError as e:
             raise PhotoshopPythonAPIError(
-                "Hyphenation must be enabled in order to access or modify hyphenation "
-                "related properties in a TextItem."
+                "Hyphenation must be enabled to access or modify hyphen-related properties in a TextItem.",
             ) from e
 
     @property
@@ -334,8 +334,7 @@ class TextItem(Photoshop):
             return self.app.hyphenateWordsLongerThan
         except COMError as e:
             raise PhotoshopPythonAPIError(
-                "Hyphenation must be enabled in order to access or modify hyphenation "
-                "related properties in a TextItem."
+                "Hyphenation must be enabled to access or modify hyphen-related properties in a TextItem.",
             ) from e
 
     @hyphenateWordsLongerThan.setter
@@ -344,8 +343,7 @@ class TextItem(Photoshop):
             self.app.hyphenateWordsLongerThan = value
         except COMError as e:
             raise PhotoshopPythonAPIError(
-                "Hyphenation must be enabled in order to access or modify hyphenation "
-                "related properties in a TextItem."
+                "Hyphenation must be enabled to access or modify hyphen-related properties in a TextItem.",
             ) from e
 
     @property
@@ -356,8 +354,7 @@ class TextItem(Photoshop):
             return self.app.hyphenationZone
         except COMError as e:
             raise PhotoshopPythonAPIError(
-                "Hyphenation must be enabled in order to access or modify hyphenation "
-                "related properties in a TextItem."
+                "Hyphenation must be enabled to access or modify hyphen-related properties in a TextItem.",
             ) from e
 
     @hyphenationZone.setter
@@ -366,8 +363,7 @@ class TextItem(Photoshop):
             self.app.hyphenationZone = value
         except COMError as e:
             raise PhotoshopPythonAPIError(
-                "Hyphenation must be enabled in order to access or modify hyphenation "
-                "related properties in a TextItem."
+                "Hyphenation must be enabled to access or modify hyphen-related properties in a TextItem.",
             ) from e
 
     @property
@@ -376,8 +372,7 @@ class TextItem(Photoshop):
             return self.app.hyphenLimit
         except COMError as e:
             raise PhotoshopPythonAPIError(
-                "Hyphenation must be enabled in order to access or modify hyphenation "
-                "related properties in a TextItem."
+                "Hyphenation must be enabled to access or modify hyphen-related properties in a TextItem.",
             ) from e
 
     @hyphenLimit.setter
@@ -386,8 +381,7 @@ class TextItem(Photoshop):
             self.app.hyphenLimit = value
         except COMError as e:
             raise PhotoshopPythonAPIError(
-                "Hyphenation must be enabled in order to access or modify hyphenation "
-                "related properties in a TextItem."
+                "Hyphenation must be enabled to access or modify hyphen-related properties in a TextItem.",
             ) from e
 
     @property
@@ -579,20 +573,21 @@ class TextItem(Photoshop):
         self.app.oldStyle = value
 
     @property
-    def parent(self) -> 'ArtLayer':
+    def parent(self) -> ArtLayer:
         """The parent `ArtLayer` containing this `TextItem`. Note that some documentation sources
-            indicate that this is a writable property, however with COM automation this does not
-            appear to be possible."""
-        from photoshop.api._artlayer import ArtLayer
+        indicate that this is a writable property, however with COM automation this does not
+        appear to be possible."""
+        from photoshop.api._artlayer import ArtLayer  # noqa:F811 isort:skip
+
         return ArtLayer(self.app.parent)
 
     @property
-    def position(self) -> tuple[Union[int, float], Union[int, float]]:
+    def position(self) -> tuple[int | float, int | float]:
         """The (x, y) position of the origin for the text."""
         return self.app.position
 
     @position.setter
-    def position(self, array: tuple[Union[int, float], Union[int, float]]):
+    def position(self, array: tuple[int | float, int | float]):
         """Set the (x, y) position of the origin for the text.
 
         Args:

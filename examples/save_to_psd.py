@@ -1,4 +1,5 @@
 """Save your current active document as a .psd file."""
+
 # Import local modules
 from photoshop import Session
 

@@ -1,4 +1,5 @@
 """Python API for Photoshop."""
+
 # Import local modules
 from photoshop.api import constants
 from photoshop.api.action_descriptor import ActionDescriptor

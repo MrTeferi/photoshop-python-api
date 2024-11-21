@@ -1,18 +1,17 @@
 """This class provides all photoshop API core functions."""
 
-# Import built-in modules
+# Import future modules
 from __future__ import annotations
+
+# Import built-in modules
 from functools import cache
 from functools import cached_property
 import logging
 import os
-import platform
 from pathlib import Path
+import platform
 from typing import Any
-from typing import List
-from typing import Optional
 from typing import TYPE_CHECKING
-from typing import Union
 import winreg  # noqa
 
 # Import third-party modules
@@ -21,10 +20,13 @@ from comtypes.client.dynamic import _Dispatch as FullyDynamicDispatch
 from comtypes.client.lazybind import Dispatch
 
 # Import local modules
-from photoshop.api.constants import PHOTOSHOP_VERSION_MAPPINGS, PHOTOSHOP_YEAR_MAPPINGS
+from photoshop.api.constants import PHOTOSHOP_VERSION_MAPPINGS
+from photoshop.api.constants import PHOTOSHOP_YEAR_MAPPINGS
 from photoshop.api.errors import PhotoshopPythonAPIError
+
+
 if TYPE_CHECKING:
-    from photoshop.api.application import Application
+    from photoshop.api.application import Application  # noqa:F401 isort:skip
 
 
 class Photoshop:
@@ -41,7 +43,7 @@ class Photoshop:
     _root = "Photoshop"
     _reg_path = "SOFTWARE\\Adobe\\Photoshop"
 
-    def __init__(self, parent: Any = None, ps_version: Optional[str] = None):
+    def __init__(self, parent: Any = None, ps_version: str | None = None):
         """Initialize the core Photoshop object.
 
         Args:
@@ -110,7 +112,7 @@ class Photoshop:
         return self._get_logger()
 
     @cached_property
-    def _app_year(self) -> Optional[str]:
+    def _app_year(self) -> str | None:
         """str: Year matching the Photoshop application version."""
         return PHOTOSHOP_YEAR_MAPPINGS.get(self._app_version)
 
@@ -148,7 +150,7 @@ class Photoshop:
     # * Private Methods
     ###
 
-    def _get_progid(self, version: Optional[str] = None) -> str:
+    def _get_progid(self, version: str | None = None) -> str:
         """Returns a comtypes progid for this object using a provided version string. If the version string is
             None, exclude it completely.
 
@@ -179,7 +181,7 @@ class Photoshop:
                 except OSError:
                     self._logger.debug(f"Not a method: {n} | {str(self)}")
 
-    def _get_photoshop_versions(self) -> List[str]:
+    def _get_photoshop_versions(self) -> list[str]:
         """Retrieve a list of Photoshop version ID's from registry."""
         try:
             key = self._open_key(self._reg_path)
@@ -191,9 +193,9 @@ class Photoshop:
 
     def _get_dispatch(
         self,
-        version: Optional[str] = None,
-        has_parent: bool = False
-    ) -> Optional[Union[FullyDynamicDispatch, Dispatch]]:
+        version: str | None = None,
+        has_parent: bool = False,
+    ) -> FullyDynamicDispatch | Dispatch | None:
         """Try each version string until a valid Photoshop COM Dispatch object is returned.
 
         Args:
@@ -264,9 +266,9 @@ class Photoshop:
 
     @staticmethod
     def _create_dispatch_object(
-        progid: Optional[str] = None,
-        logger: Optional[logging.Logger] = None,
-    ) -> Optional[Union[FullyDynamicDispatch, Dispatch]]:
+        progid: str | None = None,
+        logger: logging.Logger | None = None,
+    ) -> FullyDynamicDispatch | Dispatch | None:
         """Creates a COM object after injecting the provided version into a progid string.
 
         Args:
@@ -286,11 +288,11 @@ class Photoshop:
     @staticmethod
     @cache
     def _get_cached_dispatch_object(
-        progid: Optional[str] = None,
-        logger: Optional[logging.Logger] = None,
-    ) -> Optional[Union[FullyDynamicDispatch, Dispatch]]:
+        progid: str | None = None,
+        logger: logging.Logger | None = None,
+    ) -> FullyDynamicDispatch | Dispatch | None:
         """Middleware for `Photoshop._create_dispatch_object` that caches returned objects
-            in cases where pulling a new instance is unnecessary.
+        in cases where pulling a new instance is unnecessary.
         """
         return Photoshop._create_dispatch_object(progid=progid, logger=logger)
 
@@ -322,9 +324,11 @@ class Photoshop:
 
     @staticmethod
     @cache
-    def get_root_application() -> 'Application':
+    def get_root_application() -> Application:
         """Application: Returns the main Application object. If one isn't cached, create one."""
+        # Import local modules
         from photoshop.api.application import Application
+
         if Application._app_instance is None:
             return Application()
         return Application._app_instance

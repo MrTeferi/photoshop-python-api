@@ -22,11 +22,11 @@ Examples
 ```
 {% endfor %}
 
-"""
+""",
 )
 
 
-class Examples(object):
+class Examples:
     def __init__(self, root: Path):
         self._root = root
 
@@ -50,7 +50,7 @@ class Examples(object):
 
     @staticmethod
     def get_content(file_):
-        with open(file_, "r") as f:
+        with open(file_) as f:
             return "".join(f.readlines())
 
 

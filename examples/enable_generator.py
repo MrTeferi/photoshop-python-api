@@ -1,4 +1,5 @@
 """Enable Generator features."""
+
 # Import local modules
 from photoshop import Session
 

@@ -1,6 +1,9 @@
+# Import future modules
+from __future__ import annotations
+
 # Import built-in modules
 from contextlib import suppress
-from typing import Union, TYPE_CHECKING, Optional
+from typing import TYPE_CHECKING
 
 # Import third-party modules
 from _ctypes import COMError
@@ -11,9 +14,11 @@ from photoshop.api.enumerations import ElementPlacement
 from photoshop.api.enumerations import LayerKind
 from photoshop.api.enumerations import RasterizeType
 from photoshop.api.text_item import TextItem
+
+
 if TYPE_CHECKING:
-    from photoshop.api._document import Document
-    from photoshop.api._layerSet import LayerSet
+    from photoshop.api._document import Document  # noqa:F401 isort:skip
+    from photoshop.api._layerSet import LayerSet  # noqa:F401 isort:skip
 
 
 # pylint: disable=too-many-public-methods, too-many-arguments
@@ -185,7 +190,7 @@ class ArtLayer(Photoshop):
         return round(self.app.opacity)
 
     @opacity.setter
-    def opacity(self, value: Union[int, float]):
+    def opacity(self, value: int | float):
         """Set the master opacity of the layer.
 
         Args:
@@ -194,23 +199,25 @@ class ArtLayer(Photoshop):
         self.app.opacity = value
 
     @property
-    def parent(self) -> Union['Document', 'LayerSet']:
+    def parent(self) -> Document | LayerSet:
         """The parent `Document` or `LayerSet` containing this `ArtLayer`."""
         _parent = self.app.parent
         try:
             # Parent is a Document
             _ = _parent.path
-            from photoshop.api._document import Document
+            from photoshop.api._document import Document  # noqa:F811 isort:skip
+
             return Document(_parent)
         except (COMError, NameError, OSError):
             # Parent is a LayerSet
-            from photoshop.api._layerSet import LayerSet
+            from photoshop.api._layerSet import LayerSet  # noqa:F811 isort:skip
+
             return LayerSet(_parent)
 
     @parent.setter
-    def parent(self, parent: Union['Document', 'LayerSet']):
+    def parent(self, parent: Document | LayerSet):
         """Set the object’s container."""
-        if parent.__class__.__name__ == 'Document':
+        if parent.__class__.__name__ == "Document":
             _new = self.duplicate(parent, ElementPlacement.PlaceAtBeginning)
             self.remove()
             self.app = _new.app
@@ -238,9 +245,12 @@ class ArtLayer(Photoshop):
 
     @property
     def textItem(self) -> TextItem:
-        """The text that is associated with the layer. Valid only when ‘kind’
-            is text layer. Note that some documentation sources insist this is a writable
-            property, however with COM automation this doesn't appear to be possible."""
+        """The TextItem object associated with this layer if layer is TextLayer 'kind'.
+
+        Note:
+            Some documentation sources imply this is a writable property, however with COM
+                automation this functionality doesn't appear to be supported.
+        """
         return TextItem(self.app.textItem)
 
     @property
@@ -283,8 +293,8 @@ class ArtLayer(Photoshop):
         """Adjusts the brightness and contrast.
 
         Args:
-            brightness (int): The brightness amount. Range: -100 to 100.
-            contrast (int): The contrast amount. Range: -100 to 100.
+            brightness(int): The brightness amount. Range: -100 to 100.
+            contrast(int): The contrast amount. Range: -100 to 100.
 
         """
         return self.app.adjustBrightnessContrast(brightness, contrast)
@@ -300,15 +310,15 @@ class ArtLayer(Photoshop):
 
         Args:
             shadows: The adjustments for the shadows. The array must include
-                     three values (in the range -100 to 100), which represent
+                     three values ( in the range - 100 to 100), which represent
                      cyan or red, magenta or green, and yellow or blue, when
                      the document mode is CMYK or RGB.
             midtones: The adjustments for the midtones. The array must include
-                      three values (in the range -100 to 100), which represent
+                      three values ( in the range - 100 to 100), which represent
                       cyan or red, magenta or green, and yellow or blue, when
                       the document mode is CMYK or RGB.
             highlights: The adjustments for the highlights. The array must
-                        include three values (in the range -100 to 100), which
+                        include three values ( in the range - 100 to 100), which
                         represent cyan or red, magenta or green, and yellow or
                         blue, when the document mode is CMYK or RGB.
             preserveLuminosity: If true, luminosity is preserved.
@@ -324,8 +334,6 @@ class ArtLayer(Photoshop):
     def adjustCurves(self, curveShape) -> None:
         """Adjusts the tonal range of the selected channel using up to fourteen
         points.
-
-
 
         Args:
             curveShape: The curve points. The number of points must be between
@@ -398,7 +406,7 @@ class ArtLayer(Photoshop):
         return self.app.applyCustomFilter(characteristics, scale, offset)
 
     def applyDeInterlace(self, eliminateFields, createFields) -> None:
-        """Applies the de-interlace filter."""
+        """Applies the de - interlace filter."""
         return self.app.applyDeInterlace(eliminateFields, createFields)
 
     def applyDespeckle(self) -> None:
@@ -527,8 +535,8 @@ class ArtLayer(Photoshop):
 
     def move(
         self,
-        relativeObject: Optional[Union['ArtLayer', 'Document', 'LayerSet']] = None,
-        insertionLocation: Optional[ElementPlacement] = None
+        relativeObject: ArtLayer | Document | LayerSet | None = None,
+        insertionLocation: ElementPlacement | None = None,
     ) -> None:
         """Move this `ArtLayer` relative to another `ArtLayer`, `Document`, or `LayerSet`.
 
@@ -554,8 +562,9 @@ class ArtLayer(Photoshop):
         self.app.invert()
 
     def duplicate(
-        self, relativeObject: Optional[Union['ArtLayer', 'Document', 'LayerSet']] = None,
-        insertionLocation: Optional[ElementPlacement] = None
+        self,
+        relativeObject: ArtLayer | Document | LayerSet | None = None,
+        insertionLocation: ElementPlacement | None = None,
     ):
         """Duplicate this `ArtLayer` and place the duplicate relative to another `ArtLayer`,
             `Document`, or `LayerSet`.

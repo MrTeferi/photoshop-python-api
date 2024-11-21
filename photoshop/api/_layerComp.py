@@ -1,11 +1,15 @@
-# Import built-in modules
+# Import future modules
 from __future__ import annotations
+
+# Import built-in modules
 from typing import TYPE_CHECKING
 
 # Import local modules
 from photoshop.api._core import Photoshop
+
+
 if TYPE_CHECKING:
-    from photoshop.api._document import Document
+    from photoshop.api._document import Document  # noqa:F401 isort:skip
 
 
 class LayerComp(Photoshop):
@@ -50,9 +54,11 @@ class LayerComp(Photoshop):
         self.app.name = text
 
     @property
-    def parent(self) -> 'Document':
+    def parent(self) -> Document:
         """The parent `Document` containing this `LayerComp`."""
+        # Import local modules
         from photoshop.api._document import Document
+
         return Document(self.app.parent)
 
     @property

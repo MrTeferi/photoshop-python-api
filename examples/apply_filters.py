@@ -3,6 +3,7 @@ References:
     https://github.com/lohriialo/photoshop-scripting-python/blob/master/ApplyFilters.py
 
 """
+
 # Import third-party modules
 import examples._psd_files as psd  # Import from examples.
 
