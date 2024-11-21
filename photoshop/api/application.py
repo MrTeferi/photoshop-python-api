@@ -76,14 +76,14 @@ class Application(Photoshop):
         "typeIDToStringID",
     ]
 
-    def __new__(cls, version: Optional[str] = None, singleton: bool = True):
+    def __new__(cls, version: Optional[str] = None, singleton: bool = True, **_kw):
         """Ensures that only one instance of `Application` exists at a time, unless
             False is passed to `singleton` in the constructor."""
         if singleton is False or Application._app_instance is None:
             return super().__new__(cls)
         return Application._app_instance
 
-    def __init__(self, version: Optional[str] = None, singleton: bool = True):
+    def __init__(self, version: Optional[str] = None, singleton: bool = True, **_kw):
         """Skips initialization on subsequent calls unless `False` passed to singleton."""
         if not singleton:
             super().__init__(ps_version=version)
