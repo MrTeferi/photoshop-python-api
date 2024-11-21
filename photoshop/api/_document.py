@@ -254,7 +254,7 @@ class Document(Photoshop):
     @property
     def parent(self) -> 'Application':
         """The `Application` containing this `Document`."""
-        return self.root_application
+        return self.get_root_application()
 
     @property
     def path(self) -> Path:
