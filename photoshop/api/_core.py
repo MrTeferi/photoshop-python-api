@@ -36,7 +36,7 @@ class Photoshop:
     # Members to flag as a method in the COM object
     app_methods: list[str] = []
 
-    # Private attributes
+    # Private attributes, do not modify
     _app_version = None
     _root = "Photoshop"
     _reg_path = "SOFTWARE\\Adobe\\Photoshop"
@@ -95,6 +95,11 @@ class Photoshop:
         except AttributeError:
             return getattr(self.app, item)
 
+    def eval_javascript(self, javascript: str, Arguments: Any = None, ExecutionMode: Any = None) -> str:
+        """Instruct the application to execute javascript code."""
+        executor = self.adobe if self._has_parent else self.app
+        return executor.doJavaScript(javascript, Arguments, ExecutionMode)
+
     ###
     # * Private Properties
     ###
@@ -138,17 +143,6 @@ class Photoshop:
     def program_id(self) -> str:
         """str: Application ID as expressed in registry data, e.g. 170.0, 180.0, 190.0, etc."""
         return f"{Photoshop._app_version}.0"
-
-    @cached_property
-    def application_path(self) -> Path:
-        """Path: Path to the application, e.g. C:/Program Files/Adobe/Photoshop."""
-        return self.root_application.path
-
-    @cached_property
-    def root_application(self) -> 'Application':
-        """Application: Access the core singleton Application object from any Photoshop subclass."""
-        from photoshop.api.application import Application
-        return Application()
 
     ###
     # * Private Methods
@@ -241,27 +235,6 @@ class Photoshop:
         return _func(progid=self._get_progid(), logger=self._logger)
 
     ###
-    # * Public Methods
-    ###
-
-    def get_plugin_path(self) -> Path:
-        """Path: The absolute path to the Photoshop plugins directory."""
-        return self.application_path / "Plug-ins"
-
-    def get_presets_path(self) -> Path:
-        """Path: The absolute path to the Photoshop presets directory."""
-        return self.application_path / "Presets"
-
-    def get_script_path(self) -> Path:
-        """Path: The absolute path to the Photoshop scripts directory."""
-        return self.get_presets_path() / "Scripts"
-
-    def eval_javascript(self, javascript: str, Arguments: Any = None, ExecutionMode: Any = None) -> str:
-        """Instruct the application to execute javascript code."""
-        executor = self.adobe if self._has_parent else self.app
-        return executor.doJavaScript(javascript, Arguments, ExecutionMode)
-
-    ###
     # * Private Static Methods
     ###
 
@@ -342,3 +315,40 @@ class Photoshop:
         _logger = logging.getLogger("photoshop")
         _logger.setLevel(_log_level)
         return _logger
+
+    ###
+    # * Public Static Methods
+    ###
+
+    @staticmethod
+    @cache
+    def get_root_application() -> 'Application':
+        """Application: Returns the main Application object. If one isn't cached, create one."""
+        from photoshop.api.application import Application
+        if Application._app_instance is None:
+            return Application()
+        return Application._app_instance
+
+    @staticmethod
+    @cache
+    def get_application_path() -> Path:
+        """Path: The absolute path of Photoshop installed location."""
+        return Photoshop.get_root_application().path
+
+    @staticmethod
+    @cache
+    def get_plugin_path() -> Path:
+        """Path: The absolute path to the Photoshop plugins directory."""
+        return Photoshop.get_root_application().path / "Plug-ins"
+
+    @staticmethod
+    @cache
+    def get_presets_path() -> Path:
+        """Path: The absolute path to the Photoshop presets directory."""
+        return Photoshop.get_root_application().path / "Presets"
+
+    @staticmethod
+    @cache
+    def get_script_path() -> Path:
+        """Path: The absolute path to the Photoshop scripts directory."""
+        return Photoshop.get_presets_path() / "Scripts"
